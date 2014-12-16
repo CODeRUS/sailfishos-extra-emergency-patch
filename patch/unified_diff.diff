@@ -1,0 +1,41 @@
+commit 9fb96eb9cca3254013a7b1608bb1f4ffa1ef4f0d
+Author: CODeRUS <coderusinbox@gmail.com>
+Date:   Tue Dec 16 17:55:55 2014 +0500
+
+    Added extra emergency numbers from dconf
+    
+    dconf key: /jolla/voicecall/emergencyNumbersExtra
+
+diff --git a/usr/lib/qt5/qml/com/jolla/settings/system/PinInput.qml b/usr/lib/qt5/qml/com/jolla/settings/system/PinInput.qml
+index 88979b5..ff8c84d 100644
+--- a/usr/lib/qt5/qml/com/jolla/settings/system/PinInput.qml
++++ b/usr/lib/qt5/qml/com/jolla/settings/system/PinInput.qml
+@@ -3,6 +3,7 @@ import Sailfish.Silica 1.0
+ import MeeGo.QOfono 0.2
+ import org.nemomobile.lipstick 0.1
+ import org.nemomobile.voicecall 1.0
++import org.nemomobile.configuration 1.0
+ 
+ Item {
+     id: root
+@@ -424,6 +425,12 @@ Item {
+ 
+     VoiceCallManager { id: telephony }
+ 
++    ConfigurationValue {
++    	id: extraEmergencyNumbers
++    	key: "/jolla/voicecall/emergencyNumbersExtra"
++    	defaultValue: ["001", "010"]
++    }
++
+     // To make an emergency call: (as per ofono emergency-call-handling.txt)
+     // 1) Set org.ofono.Modem online=true
+     // 2) Dial number using telephony VoiceCallManager
+@@ -437,6 +444,7 @@ Item {
+         modem.onlineChanged.disconnect(_dialEmergencyNumber)
+         voiceCallManager.modemPath = modem.modemPath
+         var emergencyNumbers = voiceCallManager.emergencyNumbers
++        emergencyNumbers = emergencyNumbers.concat(extraEmergencyNumbers.value)
+         if (root.enteredPin !== "" && emergencyNumbers.indexOf(root.enteredPin) === -1) {
+             //: Indicates that user has entered invalid emergency number
+             //% "Only emergency calls  permitted"
